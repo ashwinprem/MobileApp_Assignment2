@@ -14,7 +14,7 @@ public class DetailActivity extends AppCompatActivity {
     private Location currentLocation;
     private TextView addressTextView;
     private EditText latitudeEditText, longitudeEditText;
-    private Button updateButton, deleteButton;
+    private Button updateButton, deleteButton, backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +26,7 @@ public class DetailActivity extends AppCompatActivity {
         longitudeEditText = findViewById(R.id.longitudeEditText);
         updateButton = findViewById(R.id.updateButton);
         deleteButton = findViewById(R.id.deleteButton);
+        backButton = findViewById(R.id.backButton);
 
         locationViewModel = new ViewModelProvider(this).get(LocationViewModel.class);
 
@@ -52,8 +53,8 @@ public class DetailActivity extends AppCompatActivity {
 
         updateButton.setOnClickListener(v -> updateLocation());
         deleteButton.setOnClickListener(v -> deleteLocation());
+        backButton.setOnClickListener(v -> saveAndGoBack()); // Set up back button click listener
     }
-
 
     private void updateLocation() {
         if (currentLocation != null) {
@@ -75,5 +76,19 @@ public class DetailActivity extends AppCompatActivity {
             finish();
         }
     }
-}
 
+    private void saveAndGoBack() {
+        // Save any changes to the location and navigate back to the main screen
+        if (currentLocation != null) {
+            double newLatitude = Double.parseDouble(latitudeEditText.getText().toString());
+            double newLongitude = Double.parseDouble(longitudeEditText.getText().toString());
+
+            currentLocation.setLatitude(newLatitude);
+            currentLocation.setLongitude(newLongitude);
+
+            locationViewModel.update(currentLocation); // Update in the database
+            Toast.makeText(this, "Location saved", Toast.LENGTH_SHORT).show();
+        }
+        finish(); // Go back to the main screen
+    }
+}
